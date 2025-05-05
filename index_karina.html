@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Karina's Web App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 8px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    input {
+      margin-bottom: 5px;
+      margin-right: 5px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Karina's App</h1>
+
+  <h3>Add New Student</h3>
+  <input id="student_id" placeholder="Student ID" />
+  <input id="math" placeholder="Math" />
+  <input id="music" placeholder="Music" />
+  <input id="physical_ed" placeholder="Physical Ed" />
+  <input id="economics" placeholder="Economics" />
+  <input id="english" placeholder="English" />
+  <input id="biology" placeholder="Biology" />
+  <input id="chemistry" placeholder="Chemistry" />
+  <input id="physics" placeholder="Physics" />
+  <input id="history" placeholder="History" />
+  <input id="geography" placeholder="Geography" />
+  <input id="computer_science" placeholder="Computer Science" />
+
+  <button onclick="addStudent()">Add</button>
+
+  <h3>Delete Student by ID</h3>
+  <input id="delete_id" placeholder="Student ID" />
+  <button onclick="deleteStudent()">Delete</button>
+
+  <br><br>
+
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>Student ID</th>
+        <th>Math</th>
+        <th>Music</th>
+        <th>Physical Ed</th>
+        <th>Economics</th>
+        <th>English</th>
+        <th>Biology</th>
+        <th>Chemistry</th>
+        <th>Physics</th>
+        <th>History</th>
+        <th>Geography</th>
+        <th>Computer Science</th>
+        
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const apiURL = "http://13.232.35.127:5000"; 
+
+    function loadTable() {
+      fetch(`${apiURL}/data`)
+        .then(res => res.json())
+        .then(data => {
+          const tableBody = document.querySelector("#dataTable tbody");
+          tableBody.innerHTML = "";
+          data.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${row.student_id}</td>
+              <td>${row.math}</td>
+              <td>${row.music}</td>
+              <td>${row.physical_ed}</td>
+              <td>${row.economics}</td>
+              <td>${row.english}</td>
+              <td>${row.biology}</td>
+              <td>${row.chemistry}</td>
+              <td>${row.physics}</td>
+              <td>${row.history}</td>
+              <td>${row.geography}</td>
+              <td>${row.computer_science}</td>
+           
+            `;
+            tableBody.appendChild(tr);
+          });
+        });
+    }
+
+    function addStudent() {
+      const student = {
+        student_id: document.getElementById("student_id").value,
+        math: document.getElementById("math").value,
+        music: document.getElementById("music").value,
+        physical_ed: document.getElementById("physical_ed").value,
+        economics: document.getElementById("economics").value,
+        english: document.getElementById("english").value,
+        biology: document.getElementById("biology").value,
+        chemistry: document.getElementById("chemistry").value,
+        physics: document.getElementById("physics").value,
+        history: document.getElementById("history").value,
+        geography: document.getElementById("geography").value,
+        computer_science: document.getElementById("computer_science").value,
+     
+      };
+
+      fetch(`${apiURL}/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(student)
+      })
+      .then(() => {
+        alert("Student added!");
+        loadTable();
+      })
+      .catch(err => alert("Error adding student"));
+    }
+
+    function deleteStudent() {
+      const id = document.getElementById("delete_id").value;
+      fetch(`${apiURL}/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ student_id: id })
+      })
+      .then(() => {
+        alert("Student deleted!");
+        loadTable();
+      })
+      .catch(err => alert("Error deleting student"));
+    }
+
+    loadTable();
+  </script>
+</body>
+</html>
